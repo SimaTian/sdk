@@ -18,7 +18,8 @@ namespace Microsoft.NET.Build.Tasks
     /// <remarks>
     /// Only called for backwards compatability, when <c>ResolvePackageDependencies</c> is true.
     /// </remarks>
-    public sealed class ResolvePackageDependencies : TaskBase
+    [MSBuildMultiThreadableTask]
+    public sealed class ResolvePackageDependencies : TaskBase, IMultiThreadableTask
     {
         private readonly Dictionary<string, string> _fileTypes = new(StringComparer.OrdinalIgnoreCase);
 
@@ -113,6 +114,8 @@ namespace Microsoft.NET.Build.Tasks
         public string TargetFramework { get; set; }
 
         #endregion
+
+        public TaskEnvironment TaskEnvironment { get; set; }
 
         public ResolvePackageDependencies()
         {
@@ -464,7 +467,8 @@ namespace Microsoft.NET.Build.Tasks
 
         private string GetAbsolutePathFromProjectRelativePath(string path)
         {
-            return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(ProjectPath), path));
+            AbsolutePath absProjectDir = TaskEnvironment.GetAbsolutePath(Path.GetDirectoryName(ProjectPath));
+            return Path.GetFullPath(Path.Combine(absProjectDir, path));
         }
     }
 }
