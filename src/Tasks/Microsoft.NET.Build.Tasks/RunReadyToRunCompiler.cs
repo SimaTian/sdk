@@ -8,8 +8,10 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.NET.Build.Tasks
 {
-    public class RunReadyToRunCompiler : ToolTask
+    [MSBuildMultiThreadableTask]
+    public class RunReadyToRunCompiler : ToolTask, IMultiThreadableTask
     {
+        public TaskEnvironment TaskEnvironment { get; set; }
         public ITaskItem CrossgenTool { get; set; }
         public ITaskItem Crossgen2Tool { get; set; }
 

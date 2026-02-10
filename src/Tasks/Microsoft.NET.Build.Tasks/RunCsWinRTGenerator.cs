@@ -15,8 +15,10 @@ namespace Microsoft.NET.Build.Tasks;
 /// <summary>
 /// The custom MSBuild task that invokes the 'cswinrtgen' tool.
 /// </summary>
-public sealed class RunCsWinRTGenerator : ToolTask
+[MSBuildMultiThreadableTask]
+public sealed class RunCsWinRTGenerator : ToolTask, IMultiThreadableTask
 {
+    public TaskEnvironment TaskEnvironment { get; set; } = null!;
     /// <summary>
     /// Gets or sets the paths to assembly files that are reference assemblies, representing
     /// the entire surface area for compilation. These assemblies are the full set of assemblies

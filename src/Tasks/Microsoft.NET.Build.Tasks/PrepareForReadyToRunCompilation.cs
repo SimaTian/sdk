@@ -11,8 +11,10 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.NET.Build.Tasks
 {
-    public class PrepareForReadyToRunCompilation : TaskBase
+    [MSBuildMultiThreadableTask]
+    public class PrepareForReadyToRunCompilation : TaskBase, IMultiThreadableTask
     {
+        public TaskEnvironment TaskEnvironment { get; set; }
         [Required]
         public ITaskItem MainAssembly { get; set; }
         public ITaskItem[] Assemblies { get; set; }

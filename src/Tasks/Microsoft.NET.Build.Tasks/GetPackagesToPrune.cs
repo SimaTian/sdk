@@ -12,8 +12,10 @@ using NuGet.Versioning;
 
 namespace Microsoft.NET.Build.Tasks
 {
-    public class GetPackagesToPrune : TaskBase
+    [MSBuildMultiThreadableTask]
+    public class GetPackagesToPrune : TaskBase, IMultiThreadableTask
     {
+        public TaskEnvironment TaskEnvironment { get; set; }
         // Minimum .NET Core version that supports package pruning
         private const int FrameworkReferenceMinVersion = 3;
         

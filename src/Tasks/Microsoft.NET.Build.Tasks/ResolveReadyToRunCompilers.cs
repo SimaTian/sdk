@@ -9,8 +9,10 @@ using NuGet.Versioning;
 
 namespace Microsoft.NET.Build.Tasks
 {
-    public class ResolveReadyToRunCompilers : TaskBase
+    [MSBuildMultiThreadableTask]
+    public class ResolveReadyToRunCompilers : TaskBase, IMultiThreadableTask
     {
+        public TaskEnvironment TaskEnvironment { get; set; }
         public bool EmitSymbols { get; set; }
         public bool ReadyToRunUseCrossgen2 { get; set; }
         public string PerfmapFormatVersion { get; set; }
