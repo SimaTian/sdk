@@ -16,7 +16,7 @@ namespace Microsoft.NET.Build.Tasks
     {
         public TaskEnvironment TaskEnvironment { get; set; }
 
-        public ITaskItem[] Items{ get; set; } = Array.Empty<ITaskItem>();
+        public ITaskItem[] Items { get; set; } = Array.Empty<ITaskItem>();
 
         public string[] PackageFolders { get; set; } = Array.Empty<string>();
 
