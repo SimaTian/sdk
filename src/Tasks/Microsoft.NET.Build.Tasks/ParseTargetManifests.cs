@@ -14,7 +14,7 @@ namespace Microsoft.NET.Build.Tasks
     /// </summary>
     public sealed class ParseTargetManifests : TaskBase
     {
-        public string TargetManifestFiles { get; set; }
+        public string TargetManifestFiles{ get; set; }
 
         [Output]
         public ITaskItem[] RuntimeStorePackages { get; private set; }
