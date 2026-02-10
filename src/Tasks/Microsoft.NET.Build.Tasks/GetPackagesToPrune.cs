@@ -137,8 +137,8 @@ namespace Microsoft.NET.Build.Tasks
             }
 
             PackagesToPrune = LoadPackagesToPrune(key,
-                TargetingPackRoots.Select(r => (string)TaskEnvironment.GetAbsolutePath(r)).ToArray(),
-                TaskEnvironment.GetAbsolutePath(PrunePackageDataRoot),
+                TargetingPackRoots.Select(r => TaskEnvironment.GetAbsolutePath(r).Value).ToArray(),
+                TaskEnvironment.GetAbsolutePath(PrunePackageDataRoot).Value,
                 Log, AllowMissingPrunePackageData);
 
             BuildEngine4.RegisterTaskObject(key, PackagesToPrune, RegisteredTaskObjectLifetime.Build, true);
