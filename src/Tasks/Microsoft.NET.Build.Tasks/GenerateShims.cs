@@ -80,10 +80,10 @@ namespace Microsoft.NET.Build.Tasks
             var embeddedApphostPaths = new List<ITaskItem>();
             foreach (var runtimeIdentifier in ShimRuntimeIdentifiers.Select(r => r.ItemSpec))
             {
-                var resolvedApphostAssetPath = (string)TaskEnvironment.GetAbsolutePath(GetApphostAsset(ApphostsForShimRuntimeIdentifiers, runtimeIdentifier));
+                AbsolutePath resolvedApphostAssetPath = TaskEnvironment.GetAbsolutePath(GetApphostAsset(ApphostsForShimRuntimeIdentifiers, runtimeIdentifier));
 
                 var packagedShimOutputDirectoryAndRid = Path.Combine(
-                        (string)TaskEnvironment.GetAbsolutePath(PackagedShimOutputDirectory),
+                        TaskEnvironment.GetAbsolutePath(PackagedShimOutputDirectory),
                         runtimeIdentifier);
 
                 var appHostDestinationFilePath = Path.Combine(
@@ -117,7 +117,7 @@ namespace Microsoft.NET.Build.Tasks
                                                  appHostDestinationFilePath: appHostDestinationFilePath,
                                                  appBinaryFilePath: appBinaryFilePath,
                                                  windowsGraphicalUserInterface: windowsGraphicalUserInterface,
-                                                 assemblyToCopyResourcesFrom: (string)TaskEnvironment.GetAbsolutePath(IntermediateAssembly));
+                                                 assemblyToCopyResourcesFrom: TaskEnvironment.GetAbsolutePath(IntermediateAssembly));
                     }
                     else
                     {
