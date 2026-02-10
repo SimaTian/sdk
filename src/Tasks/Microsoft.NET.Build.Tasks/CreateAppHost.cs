@@ -55,21 +55,7 @@ namespace Microsoft.NET.Build.Tasks
 
         public string AppRelativeDotNet { get; set; } = null;
 
-#if NETFRAMEWORK
-        TaskEnvironment IMultiThreadableTask.TaskEnvironment
-        {
-            get => _taskEnvironment;
-            set => _taskEnvironment = value;
-        }
-        internal TaskEnvironment TaskEnvironment
-        {
-            get => _taskEnvironment;
-            set => _taskEnvironment = value;
-        }
-        private TaskEnvironment _taskEnvironment;
-#else
         public TaskEnvironment TaskEnvironment { get; set; }
-#endif
 
         protected override void ExecuteCore()
         {
