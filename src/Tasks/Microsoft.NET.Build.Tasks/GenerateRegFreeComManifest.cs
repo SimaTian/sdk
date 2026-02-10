@@ -8,6 +8,7 @@ using Microsoft.NET.HostModel.ComHost;
 
 namespace Microsoft.NET.Build.Tasks
 {
+    [MSBuildMultiThreadableTask]
     public class GenerateRegFreeComManifest : TaskBase
     {
         [Required]

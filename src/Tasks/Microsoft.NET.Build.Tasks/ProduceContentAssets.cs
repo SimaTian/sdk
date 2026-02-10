@@ -14,6 +14,7 @@ namespace Microsoft.NET.Build.Tasks
     /// other filtering on content assets, including whether they match the active 
     /// project language.
     /// </summary>
+    [MSBuildMultiThreadableTask]
     public sealed class ProduceContentAssets : TaskBase
     {
         private readonly List<ITaskItem> _contentItems = new();
