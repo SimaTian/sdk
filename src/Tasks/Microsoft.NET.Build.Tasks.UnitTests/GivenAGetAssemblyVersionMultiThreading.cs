@@ -10,7 +10,7 @@ namespace Microsoft.NET.Build.Tasks.UnitTests
     public class GivenAGetAssemblyVersionMultiThreading
     {
         [Fact]
-        public void HasMSBuildMultiThreadableTaskAttribute()
+        public void ItHasMSBuildMultiThreadableTaskAttribute()
         {
             typeof(GetAssemblyVersion).Should().BeDecoratedWith<MSBuildMultiThreadableTaskAttribute>();
         }
