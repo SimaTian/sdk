@@ -29,12 +29,7 @@ namespace Microsoft.NET.Build.Tasks
         [Required]
         public string ToolsSettingsFilePath { get; set; }
 
-#if NETFRAMEWORK
-        TaskEnvironment IMultiThreadableTask.TaskEnvironment { get; set; }
-        private TaskEnvironment TaskEnvironment => ((IMultiThreadableTask)this).TaskEnvironment;
-#else
         public TaskEnvironment TaskEnvironment { get; set; }
-#endif
 
         protected override void ExecuteCore()
         {
