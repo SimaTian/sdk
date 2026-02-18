@@ -66,5 +66,48 @@ namespace Microsoft.NET.Build.Tasks.UnitTests
                 Directory.Delete(projectDir, true);
             }
         }
+
+        [Fact]
+        public void OutputMatchesBetweenSingleAndMultiProcessMode()
+        {
+            // Use the test assembly itself as input — it references System.Runtime.
+            var thisAssemblyPath = typeof(GivenAGetDependsOnNETStandardMultiThreading).Assembly.Location;
+            var cwd = Directory.GetCurrentDirectory();
+
+            // --- Single-process mode: TaskEnvironment based on CWD (no explicit project dir) ---
+            var singleProcessTask = new GetDependsOnNETStandard
+            {
+                BuildEngine = new MockBuildEngine(),
+                TaskEnvironment = TaskEnvironmentHelper.CreateForTest(),
+                References = new ITaskItem[]
+                {
+                    new MockTaskItem { ItemSpec = thisAssemblyPath }
+                }
+            };
+
+            var singleResult = singleProcessTask.Execute();
+
+            // --- Multi-process mode: TaskEnvironment with explicit project dir == CWD ---
+            var multiProcessTask = new GetDependsOnNETStandard
+            {
+                BuildEngine = new MockBuildEngine(),
+                TaskEnvironment = TaskEnvironmentHelper.CreateForTest(cwd),
+                References = new ITaskItem[]
+                {
+                    new MockTaskItem { ItemSpec = thisAssemblyPath }
+                }
+            };
+
+            var multiResult = multiProcessTask.Execute();
+
+            // Both should succeed
+            singleResult.Should().BeTrue("single-process mode should succeed");
+            multiResult.Should().BeTrue("multi-process mode should succeed");
+
+            // The output must be identical
+            multiProcessTask.DependsOnNETStandard.Should().Be(
+                singleProcessTask.DependsOnNETStandard,
+                "DependsOnNETStandard output should be identical between single-process and multi-process modes");
+        }
     }
 }

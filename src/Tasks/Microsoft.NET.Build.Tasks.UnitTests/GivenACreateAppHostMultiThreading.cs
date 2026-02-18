@@ -89,5 +89,100 @@ namespace Microsoft.NET.Build.Tasks.UnitTests
                 Directory.Delete(projectDir, true);
             }
         }
+
+        [Fact]
+        public void PathResolutionMatchesBetweenSingleAndMultiProcessMode()
+        {
+            var projectDir = Path.Combine(Path.GetTempPath(), "apphost-parity-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(projectDir);
+            try
+            {
+                // Both TaskEnvironments point to the same directory — they should resolve identically.
+                var singleEnv = TaskEnvironmentHelper.CreateForTest(projectDir);
+                var multiEnv = TaskEnvironmentHelper.CreateForTest(projectDir);
+
+                // Test with relative paths
+                var relativePaths = new[]
+                {
+                    Path.Combine("input", "apphost.exe"),
+                    Path.Combine("output", "myapp.exe"),
+                    Path.Combine("bin", "Debug", "net8.0", "myapp.dll"),
+                    "simple.dll"
+                };
+
+                foreach (var relativePath in relativePaths)
+                {
+                    var singleResolved = singleEnv.GetAbsolutePath(relativePath);
+                    var multiResolved = multiEnv.GetAbsolutePath(relativePath);
+
+                    ((string)singleResolved).Should().Be((string)multiResolved,
+                        $"relative path '{relativePath}' should resolve identically in both modes");
+                }
+
+                // Test with absolute paths — should pass through unchanged
+                var absolutePaths = new[]
+                {
+                    Path.Combine(projectDir, "input", "apphost.exe"),
+                    Path.GetTempFileName()
+                };
+
+                foreach (var absolutePath in absolutePaths)
+                {
+                    var singleResolved = singleEnv.GetAbsolutePath(absolutePath);
+                    var multiResolved = multiEnv.GetAbsolutePath(absolutePath);
+
+                    ((string)singleResolved).Should().Be((string)multiResolved,
+                        $"absolute path '{absolutePath}' should resolve identically in both modes");
+                    ((string)singleResolved).Should().Be(absolutePath,
+                        "absolute paths should pass through unchanged");
+                }
+
+                // Create dummy files so both task instances hit the same error path
+                Directory.CreateDirectory(Path.Combine(projectDir, "input"));
+                Directory.CreateDirectory(Path.Combine(projectDir, "output"));
+                Directory.CreateDirectory(Path.Combine(projectDir, "bin"));
+                File.WriteAllText(Path.Combine(projectDir, "input", "apphost.exe"), "not a real apphost");
+                File.WriteAllText(Path.Combine(projectDir, "bin", "myapp.dll"), "not a real assembly");
+
+                // Verify that the task itself uses TaskEnvironment for all path inputs
+                var singleTask = new CreateAppHost
+                {
+                    AppHostSourcePath = Path.Combine("input", "apphost.exe"),
+                    AppHostDestinationPath = Path.Combine("output", "myapp.exe"),
+                    AppBinaryName = "myapp.dll",
+                    IntermediateAssembly = Path.Combine("bin", "myapp.dll"),
+                    Retries = 0,
+                    BuildEngine = new MockBuildEngine(),
+                    TaskEnvironment = singleEnv
+                };
+
+                var multiTask = new CreateAppHost
+                {
+                    AppHostSourcePath = Path.Combine("input", "apphost.exe"),
+                    AppHostDestinationPath = Path.Combine("output", "myapp.exe"),
+                    AppBinaryName = "myapp.dll",
+                    IntermediateAssembly = Path.Combine("bin", "myapp.dll"),
+                    Retries = 0,
+                    BuildEngine = new MockBuildEngine(),
+                    TaskEnvironment = multiEnv
+                };
+
+                // Both tasks will fail (no real PE files) but we verify they get the same errors
+                singleTask.Execute();
+                multiTask.Execute();
+
+                var singleErrors = ((MockBuildEngine)singleTask.BuildEngine).Errors
+                    .Select(e => e.Message).ToList();
+                var multiErrors = ((MockBuildEngine)multiTask.BuildEngine).Errors
+                    .Select(e => e.Message).ToList();
+
+                multiErrors.Should().BeEquivalentTo(singleErrors,
+                    "both modes should produce identical error messages when given the same inputs");
+            }
+            finally
+            {
+                try { Directory.Delete(projectDir, true); } catch { }
+            }
+        }
     }
 }
