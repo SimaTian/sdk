@@ -136,7 +136,7 @@ namespace Microsoft.NET.Build.Tasks
             return filteredPackages;
         }
 
-        private void WriteDepsFile(string depsFilePath)
+        private void WriteDepsFile(string depsFilePath, string originalDepsFilePath)
         {
             ProjectContext projectContext = null;
             LockFileLookup lockFileLookup = null;
@@ -266,7 +266,7 @@ namespace Microsoft.NET.Build.Tasks
             {
                 writer.Write(dependencyContext, fileStream);
             }
-            _filesWritten.Add(new TaskItem(depsFilePath));
+            _filesWritten.Add(new TaskItem(originalDepsFilePath));
 
             if (ValidRuntimeIdentifierPlatformsForAssets != null)
             {
@@ -313,7 +313,7 @@ namespace Microsoft.NET.Build.Tasks
                 AssetsFilePath = TaskEnvironment.GetAbsolutePath(AssetsFilePath);
             }
             RuntimeGraphPath = TaskEnvironment.GetAbsolutePath(RuntimeGraphPath);
-            WriteDepsFile(absDepsFilePath);
+            WriteDepsFile(absDepsFilePath, DepsFilePath);
         }
     }
 }
