@@ -1183,6 +1183,9 @@ namespace Microsoft.NET.Build.Tasks
         {
             return new(() =>
         {
+                // TODO: CliFolderPathCalculatorCore.GetDotnetUserProfileFolderPath() uses
+                // Environment.GetEnvironmentVariable internally, bypassing TaskEnvironment.
+                // Fixing this requires changes to the shared CliFolderPathCalculatorCore class.
                 string? userProfileDir = CliFolderPathCalculatorCore.GetDotnetUserProfileFolderPath();
 
                 //  When running MSBuild tasks, the current directory is always the project directory, so we can use that as the
